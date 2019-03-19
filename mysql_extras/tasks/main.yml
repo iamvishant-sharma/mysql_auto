@@ -1,0 +1,38 @@
+---
+- name: Install MySQL
+  package: name={{ item }} state=installed update-cache=yes
+  with_items:
+   - mysql-server
+   - mysql-client
+   - python-mysqldb
+   - libmysqlclient-dev
+
+- name: Start MySQL service
+  action: service name=mysql state=started enabled=yes
+
+- name: Set root Password
+  mysql_user: name=root host={{ item }} password={{ mysql_root_password }} state=present
+  with_items:
+    - "%"
+    - localhost
+
+- name: Add config file
+  template: src=my.cnf.j2 dest=/root/.my.cnf owner=root group=root mode=0600
+
+- name: create db 
+  action: mysql_db name=chiklu_ka_db state=present
+
+#- name: Creates database user chiklu with password  for new craeted database mydb and grant all priveleges
+#  action: mysql_user state=present name=chiklu password="{{user_pass}}" priv=chiklu_ka_db.*:ALL
+
+- name: Set mysql user privileges
+  mysql_user:
+    name=chiklu
+    password="{{user_pass}}"
+    priv="chiklu_ka_db.*:ALL"
+    state=present
+
+- name: Restarting mysql
+  service: name=mysql state=restarted
+
+
