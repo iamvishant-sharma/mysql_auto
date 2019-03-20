@@ -20,15 +20,15 @@
   template: src=my.cnf.j2 dest=/root/.my.cnf owner=root group=root mode=0600
 
 - name: create db 
-  action: mysql_db name=chiklu_ka_db state=present
+  action: mysql_db name={{ mysql_db name }} state=present
 
 #- name: Creates database user chiklu with password  for new craeted database mydb and grant all priveleges
 #  action: mysql_user state=present name=chiklu password="{{user_pass}}" priv=chiklu_ka_db.*:ALL
 
 - name: Set mysql user privileges
   mysql_user:
-    name=chiklu
-    password="{{user_pass}}"
+    name={{ mysql_username }}
+    password={{ mysql_user_pass }}
     priv="chiklu_ka_db.*:ALL"
     state=present
 
